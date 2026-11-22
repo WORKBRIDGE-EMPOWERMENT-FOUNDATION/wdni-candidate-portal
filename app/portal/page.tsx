@@ -26,9 +26,9 @@ export default async function PortalPage() {
     return (
       <>
         <SiteHeader right={<SignOutButton />} />
-        <main className="mx-auto max-w-xl px-4 py-16 text-center">
-          <h1 className="text-xl font-bold">We couldn't find you on the shortlist</h1>
-          <p className="mt-3 text-slate-600">
+        <main className="mx-auto max-w-xl px-6 py-20">
+          <h1 className="text-2xl">This account isn&apos;t on the shortlist</h1>
+          <p className="mt-3 text-[15px] leading-relaxed text-muted">
             You signed in as {user.email || user.phone}, but that isn't on the WDNI shortlist. If you think this is a
             mistake, contact {CONTACT_EMAIL} or call {CONTACT_PHONE}.
           </p>
@@ -67,55 +67,75 @@ export default async function PortalPage() {
   return (
     <>
       <SiteHeader right={<SignOutButton />} />
-      <main className="mx-auto max-w-5xl px-4 py-8">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <main className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6 lg:pt-10">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Welcome, {firstName}</h1>
-            <p className="text-sm text-slate-600">Women Drive Nigeria Initiative · Pioneer 100</p>
+            <p className="text-[15px] font-semibold text-muted">Candidate file for the Pioneer 100</p>
+            <h1 className="mt-1 text-3xl sm:text-4xl">Welcome, {firstName}</h1>
           </div>
           <StatusBadge status={status} />
         </div>
 
         {status === "needs_changes" && entry.review_note && (
-          <div className="mb-6 rounded-xl border border-orange-200 bg-orange-50 p-4 text-sm text-orange-900">
-            <p className="font-semibold">The WDNI team has asked you to update your application:</p>
-            <p className="mt-1 whitespace-pre-line">{entry.review_note as string}</p>
+          <div role="alert" className="mb-8 rounded-lg border-l-4 border-orange-500 bg-orange-50 px-5 py-4 text-[15px] text-orange-950">
+            <p className="font-bold">The WDNI team has asked you to update your file</p>
+            <p className="mt-1 whitespace-pre-line leading-relaxed">{entry.review_note as string}</p>
           </div>
         )}
 
         {editable ? (
           <PortalForm userId={user.id} initialValues={values} initialDocs={documents} />
         ) : (
-          <>
-            <div className="mb-6 rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-700">
-              {status === "submitted" && (
-                <p>
-                  <span className="font-semibold text-slate-900">Thank you — your application has been submitted</span>
-                  {submission?.submitted_at ? ` on ${formatDateTime(submission.submitted_at as string)}` : ""}. The WDNI
-                  team is reviewing it and will contact you with next steps. If we need anything else, you'll be able to
-                  sign in here and update your form.
-                </p>
-              )}
-              {status === "approved" && (
-                <p>
-                  <span className="font-semibold text-emerald-800">Congratulations — your application has been approved.</span>{" "}
-                  The WDNI team will contact you about training dates and next steps.
-                  {entry.review_note ? <span className="mt-2 block whitespace-pre-line">{entry.review_note as string}</span> : null}
-                </p>
-              )}
-              {status === "rejected" && (
-                <p>
-                  Thank you for your interest in WDNI. After review, we are unable to move your application forward at
-                  this time. For questions, contact {CONTACT_EMAIL}.
-                </p>
-              )}
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <div className="order-2 lg:order-1">
+              <h2 className="mb-4 text-xl">What you submitted</h2>
+              <SubmissionSummary
+                values={values}
+                docs={documents.map((d) => ({ type: d.doc_type, fileName: d.file_name }))}
+              />
             </div>
-            <h2 className="mb-3 text-lg font-semibold">What you submitted</h2>
-            <SubmissionSummary
-              values={values}
-              docs={documents.map((d) => ({ type: d.doc_type, fileName: d.file_name }))}
-            />
-          </>
+            <aside className="order-1 lg:order-2">
+              <div
+                className={`rounded-lg p-6 lg:sticky lg:top-8 ${
+                  status === "approved" ? "bg-navy-900 text-white" : "panel"
+                }`}
+              >
+                {status === "submitted" && (
+                  <>
+                    <h2 className="text-xl">File submitted</h2>
+                    <p className="mt-2 text-[15px] leading-relaxed text-muted">
+                      {submission?.submitted_at ? `Received ${formatDateTime(submission.submitted_at as string)}. ` : ""}
+                      The WDNI team is checking your details and documents and will contact you with next steps. If
+                      anything needs fixing, you&apos;ll be able to sign in and update it here.
+                    </p>
+                  </>
+                )}
+                {status === "approved" && (
+                  <>
+                    <h2 className="text-xl">You&apos;re verified</h2>
+                    <p className="mt-2 text-[15px] leading-relaxed text-white/80">
+                      Your candidate file has been approved. The WDNI team will contact you about training dates and
+                      what to bring.
+                    </p>
+                    {entry.review_note ? (
+                      <p className="mt-4 whitespace-pre-line border-t border-white/15 pt-4 text-[15px] leading-relaxed">
+                        {entry.review_note as string}
+                      </p>
+                    ) : null}
+                  </>
+                )}
+                {status === "rejected" && (
+                  <>
+                    <h2 className="text-xl">Application closed</h2>
+                    <p className="mt-2 text-[15px] leading-relaxed text-muted">
+                      Thank you for your interest in WDNI. After review, we can&apos;t take your application forward at
+                      this time. For questions, email {CONTACT_EMAIL}.
+                    </p>
+                  </>
+                )}
+              </div>
+            </aside>
+          </div>
         )}
       </main>
     </>

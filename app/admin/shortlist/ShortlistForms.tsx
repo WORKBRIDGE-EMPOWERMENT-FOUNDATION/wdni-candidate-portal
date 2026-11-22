@@ -7,9 +7,9 @@ function Feedback({ state }: { state: FormState }) {
   if (!state) return null;
   return (
     <div className="space-y-2 text-sm">
-      {state.ok && <p className="rounded-lg bg-emerald-50 px-3 py-2 text-emerald-800">{state.ok}</p>}
+      {state.ok && <p role="status" className="rounded-md border-l-4 border-emerald-600 bg-emerald-50 px-3 py-2.5 text-emerald-900">{state.ok}</p>}
       {state.error && (
-        <div className="rounded-lg bg-rose-50 px-3 py-2 text-rose-700">
+        <div role="alert" className="rounded-md border-l-4 border-red-700 bg-red-50 px-3 py-2.5 text-red-900">
           <p>{state.error}</p>
           {state.details && state.details.length > 0 && (
             <ul className="mt-1 list-disc pl-5 text-xs">
@@ -29,58 +29,58 @@ export function ShortlistForms({ invite }: { invite: string }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <form action={addAction} className="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
-        <h2 className="font-semibold">Add one candidate</h2>
+      <form action={addAction} className="panel space-y-4 p-6">
+        <h2 className="text-lg">Add one candidate</h2>
         <div>
-          <label htmlFor="full_name" className="text-sm font-medium text-slate-700">Full name *</label>
-          <input id="full_name" name="full_name" required className="input mt-1" />
+          <label htmlFor="full_name" className="field-label">Full name</label>
+          <input id="full_name" name="full_name" required className="input mt-1.5" />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="email" className="text-sm font-medium text-slate-700">Email</label>
-            <input id="email" name="email" type="email" className="input mt-1" />
+            <label htmlFor="email" className="field-label">Email</label>
+            <input id="email" name="email" type="email" required className="input mt-1.5" />
           </div>
           <div>
-            <label htmlFor="phone" className="text-sm font-medium text-slate-700">Phone</label>
-            <input id="phone" name="phone" type="tel" placeholder="0803 123 4567" className="input mt-1" />
+            <label htmlFor="phone" className="field-label">Phone <span className="font-normal text-muted">(optional)</span></label>
+            <input id="phone" name="phone" type="tel" placeholder="0803 123 4567" className="input mt-1.5" />
           </div>
         </div>
         <div>
-          <label htmlFor="cohort" className="text-sm font-medium text-slate-700">Cohort</label>
-          <input id="cohort" name="cohort" defaultValue="Pioneer 100" className="input mt-1" />
+          <label htmlFor="cohort" className="field-label">Cohort</label>
+          <input id="cohort" name="cohort" defaultValue="Pioneer 100" className="input mt-1.5" />
         </div>
         <Feedback state={addState} />
         <button className="btn-primary" disabled={adding}>{adding ? "Adding…" : "Add to shortlist"}</button>
       </form>
 
-      <form action={csvAction} className="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
-        <h2 className="font-semibold">Import from a spreadsheet</h2>
-        <p className="text-sm text-slate-600">
+      <form action={csvAction} className="panel space-y-4 p-6">
+        <h2 className="text-lg">Import from a spreadsheet</h2>
+        <p className="text-[15px] text-muted">
           In Excel or Google Sheets, save the list as CSV with the columns <code>full_name, email, phone</code>.
           Duplicates are skipped.
         </p>
-        <input name="file" type="file" accept=".csv,text/csv" className="block w-full text-sm" />
+        <input name="file" type="file" accept=".csv,text/csv" className="block w-full text-sm file:mr-3 file:rounded-md file:border file:border-line file:bg-white file:px-3 file:py-2 file:font-semibold hover:file:bg-mist" />
         <div>
-          <label htmlFor="pasted" className="text-sm font-medium text-slate-700">…or paste rows</label>
+          <label htmlFor="pasted" className="field-label">…or paste rows</label>
           <textarea
             id="pasted"
             name="pasted"
             rows={5}
-            className="input mt-1 font-mono text-xs"
+            className="input mt-1.5 font-mono text-xs"
             placeholder={"full_name,email,phone\nAmina Bello,amina@example.com,08031234567"}
           />
         </div>
         <div>
-          <label htmlFor="csv_cohort" className="text-sm font-medium text-slate-700">Cohort</label>
-          <input id="csv_cohort" name="cohort" defaultValue="Pioneer 100" className="input mt-1" />
+          <label htmlFor="csv_cohort" className="field-label">Cohort</label>
+          <input id="csv_cohort" name="cohort" defaultValue="Pioneer 100" className="input mt-1.5" />
         </div>
         <Feedback state={csvState} />
         <button className="btn-primary" disabled={importing}>{importing ? "Importing…" : "Import"}</button>
       </form>
 
-      <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-6 lg:col-span-2">
+      <div className="panel space-y-3 p-6 lg:col-span-2">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="font-semibold">Invite message</h2>
+          <h2 className="text-lg">Invite message</h2>
           <button
             type="button"
             className="btn-secondary"
@@ -93,8 +93,8 @@ export function ShortlistForms({ invite }: { invite: string }) {
             {copied ? "Copied" : "Copy"}
           </button>
         </div>
-        <p className="text-sm text-slate-600">Send this to shortlisted candidates by email, SMS or WhatsApp.</p>
-        <pre className="whitespace-pre-wrap rounded-lg bg-slate-50 p-4 text-sm text-slate-800">{invite}</pre>
+        <p className="text-[15px] text-muted">Send this to shortlisted candidates by email, SMS or WhatsApp.</p>
+        <pre className="whitespace-pre-wrap rounded-md border border-line bg-mist p-4 font-sans text-[15px] leading-relaxed">{invite}</pre>
       </div>
     </div>
   );

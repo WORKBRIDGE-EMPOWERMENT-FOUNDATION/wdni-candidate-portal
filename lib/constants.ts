@@ -1,4 +1,10 @@
 export const BUCKET = "candidate-docs";
+
+/**
+ * Phone (SMS) sign-in. Off for now: candidates sign in with an email code only.
+ * To turn on later, set NEXT_PUBLIC_PHONE_SIGNIN=true and finish Part B of docs/sign-in-codes.md.
+ */
+export const PHONE_SIGNIN = process.env.NEXT_PUBLIC_PHONE_SIGNIN === "true";
 export const CONTACT_EMAIL = "admin@workbridgefoundation.org";
 export const CONTACT_PHONE = "+234 706 632 7950";
 export const CONTACT_WHATSAPP = "+234 810 727 8841";

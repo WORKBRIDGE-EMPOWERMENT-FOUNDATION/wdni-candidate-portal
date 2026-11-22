@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import { BUCKET, STATUSES, type CandidateStatus } from "@/lib/constants";
+import { BUCKET, PHONE_SIGNIN, STATUSES, type CandidateStatus } from "@/lib/constants";
 import { normalizeNgPhone } from "@/lib/phone";
 
 export type FormState = { ok?: string; error?: string; details?: string[] } | null;
@@ -17,6 +17,7 @@ function parseCandidate(name: string, emailRaw: string, phoneRaw: string): NewCa
   const phone = phoneInput ? normalizeNgPhone(phoneInput) : null;
 
   if (!full_name) return "missing name";
+  if (!PHONE_SIGNIN && !email) return "needs an email address (candidates sign in by email)";
   if (!email && !phoneInput) return "needs an email or phone number";
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return `invalid email "${emailRaw.trim()}"`;
   if (phoneInput && !phone) return `invalid phone "${phoneInput}"`;

@@ -1,4 +1,5 @@
 import { PrintButton } from "@/components/PrintButton";
+import { BrandMark } from "@/components/BrandMark";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata = { title: "WDNI Guarantor Form" };
@@ -15,13 +16,14 @@ function Line({ label }: { label: string }) {
 export default function GuarantorFormPage() {
   return (
     <main className="mx-auto max-w-3xl bg-white px-6 py-8 sm:px-10 print:max-w-none print:px-0 print:py-0">
-      <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-slate-50 p-4 text-sm text-slate-700">
+      <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-mist p-4 text-sm text-slate-700">
         <span>Print this form, have your guarantor complete and sign it, then upload a scan or clear photo in the portal.</span>
         <PrintButton />
       </div>
 
-      <header className="border-b-2 border-slate-900 pb-4 text-center">
-        <p className="text-xs uppercase tracking-widest text-slate-600">Workbridge Empowerment Foundation</p>
+      <header className="border-b-2 border-brand pb-4 text-center">
+        <div className="mb-3 flex justify-center"><BrandMark size="lg" /></div>
+        <p className="text-sm text-muted">Workbridge Empowerment Foundation</p>
         <h1 className="mt-1 text-xl font-bold">Women Drive Nigeria Initiative (WDNI)</h1>
         <p className="text-lg font-semibold">Guarantor Form</p>
       </header>
@@ -47,7 +49,7 @@ export default function GuarantorFormPage() {
             <Line label="Number of years known:" />
             <Line label="Means of ID and ID number:" />
           </div>
-          <div className="mt-2 grid h-40 w-32 shrink-0 place-items-center border border-dashed border-slate-400 p-2 text-center text-xs text-slate-500">
+          <div className="mt-2 grid h-40 w-32 shrink-0 place-items-center border border-dashed border-slate-400 p-2 text-center text-xs text-muted">
             Affix guarantor's passport photograph
           </div>
         </div>
@@ -78,7 +80,7 @@ export default function GuarantorFormPage() {
         </div>
       </section>
 
-      <p className="mt-8 border-t border-slate-300 pt-3 text-xs text-slate-500">
+      <p className="mt-8 border-t border-slate-300 pt-3 text-xs text-muted">
         Workbridge Empowerment Foundation (RC 9416201) · No. 10 Lord Lugard Street, Asokoro, Abuja FCT · {CONTACT_EMAIL}.
         The information on this form is used only to verify the candidate for WDNI.
       </p>

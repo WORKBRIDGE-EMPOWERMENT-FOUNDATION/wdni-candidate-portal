@@ -3,7 +3,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeNgPhone } from "@/lib/phone";
-import { CONTACT_EMAIL } from "@/lib/constants";
+import { CONTACT_EMAIL, PHONE_SIGNIN } from "@/lib/constants";
 
 export type Channel = "email" | "phone";
 export type RequestResult = { ok: true; channel: Channel; target: string } | { ok: false; error: string };
@@ -12,9 +12,12 @@ export type VerifyResult = { ok: true; redirectTo: string } | { ok: false; error
 /** Step 1: check the email/phone is on the shortlist (or is an HR admin), then send a one-time code. */
 export async function requestOtp(identifier: string): Promise<RequestResult> {
   const raw = identifier.trim();
-  if (!raw) return { ok: false, error: "Enter your email address or phone number." };
+  if (!raw) return { ok: false, error: PHONE_SIGNIN ? "Enter your email address or phone number." : "Enter your email address." };
 
   const channel: Channel = raw.includes("@") ? "email" : "phone";
+  if (channel === "phone" && !PHONE_SIGNIN) {
+    return { ok: false, error: "Sign in with your email address. Phone sign-in isn't available yet." };
+  }
   let target: string;
   if (channel === "email") {
     target = raw.toLowerCase();
@@ -41,9 +44,11 @@ export async function requestOtp(identifier: string): Promise<RequestResult> {
   if (!allowed) {
     return {
       ok: false,
-      error: `We couldn't find this ${channel === "email" ? "email address" : "phone number"} on the WDNI shortlist. ` +
-        `Use the one you applied with, try your ${channel === "email" ? "phone number" : "email address"} instead, ` +
-        `or contact ${CONTACT_EMAIL}.`,
+      error: PHONE_SIGNIN
+        ? `We couldn't find this ${channel === "email" ? "email address" : "phone number"} on the WDNI shortlist. ` +
+          `Use the one you applied with, try your ${channel === "email" ? "phone number" : "email address"} instead, ` +
+          `or contact ${CONTACT_EMAIL}.`
+        : `We couldn't find this email address on the WDNI shortlist. Use the email you applied with, or contact ${CONTACT_EMAIL}.`,
     };
   }
 

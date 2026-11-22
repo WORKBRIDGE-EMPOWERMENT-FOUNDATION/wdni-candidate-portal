@@ -1,28 +1,77 @@
 @import "tailwindcss";
 
+/* Workbridge Empowerment Foundation brand, taken from workbridgefoundation.org */
 @theme {
-  --color-brand: #12395b;
-  --color-brand-dark: #0b2740;
-  --color-accent: #f2a900;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --color-navy-950: #111c29;
+  --color-navy-900: #1e252f;
+  --color-brand: #0858a8;
+  --color-brand-dark: #06427e;
+  --color-brand-100: #d6e5f5;
+  --color-brand-50: #edf4fc;
+  --color-accent: #f07028;
+  --color-accent-dark: #d45a16;
+  --color-accent-light: #ffb277;
+  --color-accent-soft: #fff7ed;
+  --color-mist: #f5f9fe;
+  --color-ink: #1e252f;
+  --color-muted: #475467;
+  --color-line: #e5e8ec;
+}
+
+@theme inline {
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-quicksand), var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 700; }
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-mist font-sans text-ink antialiased;
+  font-feature-settings: "kern";
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 @utility input {
-  @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm
-    focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:bg-slate-100;
+  @apply block w-full rounded-md border border-line bg-white px-3 py-2.5 text-[15px] text-ink
+    placeholder:text-muted/60 transition-colors
+    hover:border-muted/50 focus:border-brand focus:outline-none focus:ring-[3px] focus:ring-brand/20
+    disabled:bg-mist aria-[invalid=true]:border-red-700;
+}
+
+@utility field-label {
+  @apply text-sm font-semibold text-ink;
+}
+
+@utility panel {
+  @apply rounded-xl border border-line bg-white;
 }
 
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition
-    disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-[15px] font-extrabold transition-colors
+    disabled:cursor-not-allowed disabled:opacity-45;
 }
 @utility btn-primary { @apply btn bg-brand text-white hover:bg-brand-dark; }
-@utility btn-secondary { @apply btn border border-slate-300 bg-white text-slate-800 hover:bg-slate-50; }
-@utility btn-danger { @apply btn border border-rose-300 bg-white text-rose-700 hover:bg-rose-50; }
+@utility btn-accent { @apply btn bg-accent text-white hover:bg-accent-dark; }
+@utility btn-secondary { @apply btn border border-line bg-white text-ink hover:border-muted/50 hover:bg-mist; }
+@utility btn-danger { @apply btn border border-red-300 bg-white text-red-800 hover:bg-red-50; }
+
+/* Road-marking dashes for route segments that are still ahead. */
+@utility dash-y {
+  background-image: repeating-linear-gradient(to bottom, currentColor 0 7px, transparent 7px 13px);
+}
+@utility dash-x {
+  background-image: repeating-linear-gradient(to right, currentColor 0 7px, transparent 7px 13px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
 
 @media print {
   .no-print { display: none !important; }

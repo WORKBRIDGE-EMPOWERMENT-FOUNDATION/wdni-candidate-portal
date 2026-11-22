@@ -32,7 +32,7 @@ export default async function AdminHome({
     .order("updated_at", { ascending: false });
 
   if (error) {
-    return <p className="rounded-lg bg-rose-50 p-4 text-sm text-rose-700">Could not load candidates: {error.message}</p>;
+    return <p className="rounded-md border-l-4 border-red-700 bg-red-50 p-4 text-sm text-red-900">Could not load candidates: {error.message}</p>;
   }
 
   const rows: Row[] = (data ?? []).map((r) => ({ ...r, submissions: one(r.submissions), documents: r.documents ?? [] }));
@@ -53,75 +53,102 @@ export default async function AdminHome({
       .some((x) => String(x).toLowerCase().includes(term));
   });
 
-  const totalDocs = DOCUMENTS.filter((d) => d.type !== "education_certificate" && d.type !== "drivers_licence").length;
+  // Documents every candidate must upload (licence is only needed by those who have one).
+  const coreDocs = DOCUMENTS.filter((d) => d.type !== "education_certificate" && d.type !== "drivers_licence").map((d) => d.type);
+  const requiredDocs = coreDocs.length;
+
+  // The pipeline reads left to right in the order a candidate moves through it.
+  const PIPELINE: CandidateStatus[] = ["shortlisted", "in_progress", "submitted", "needs_changes", "approved", "rejected"];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Candidates</h1>
-          <p className="text-sm text-slate-600">{rows.length} on the shortlist</p>
+          <h1 className="text-3xl">Candidates</h1>
+          <p className="mt-1 text-[15px] text-muted">
+            {rows.length} on the shortlist, {counts.submitted} waiting for review
+          </p>
         </div>
         <Link href="/admin/shortlist" className="btn-primary">Add candidates</Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-7">
-        <StatCard label="All" value={rows.length} href="/admin" active={!activeStatus} />
-        {STATUSES.map((s) => (
-          <StatCard key={s} label={STATUS_LABELS[s]} value={counts[s]} href={`/admin?status=${s}`} active={activeStatus === s} />
+      <nav aria-label="Filter by status" className="panel grid grid-cols-2 overflow-hidden sm:grid-cols-4 lg:grid-cols-7">
+        <PipelineCell label="Everyone" value={rows.length} href={q ? `/admin?q=${encodeURIComponent(q)}` : "/admin"} active={!activeStatus} />
+        {PIPELINE.map((s) => (
+          <PipelineCell
+            key={s}
+            label={STATUS_LABELS[s]}
+            value={counts[s]}
+            href={`/admin?status=${s}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
+            active={activeStatus === s}
+            highlight={s === "submitted" && counts.submitted > 0}
+          />
         ))}
-      </div>
+      </nav>
 
-      <form className="flex gap-2" action="/admin">
+      <form className="flex max-w-lg gap-2" action="/admin" role="search">
         {activeStatus && <input type="hidden" name="status" value={activeStatus} />}
-        <input name="q" defaultValue={q ?? ""} placeholder="Search name, email, phone or state" className="input max-w-sm" />
+        <label htmlFor="q" className="sr-only">Search candidates</label>
+        <input id="q" name="q" defaultValue={q ?? ""} placeholder="Search by name, email, phone or state" className="input" />
         <button className="btn-secondary">Search</button>
       </form>
 
-      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
-        <table className="min-w-full divide-y divide-slate-200 text-sm">
-          <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-            <tr>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Contact</th>
-              <th className="px-4 py-3">State</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Documents</th>
-              <th className="px-4 py-3">Submitted</th>
+      <div className="panel overflow-x-auto">
+        <table className="min-w-full text-[15px]">
+          <thead>
+            <tr className="border-b border-line text-left text-[13px] font-semibold text-muted">
+              <th scope="col" className="px-5 py-3">Candidate</th>
+              <th scope="col" className="px-5 py-3">Contact</th>
+              <th scope="col" className="px-5 py-3">State</th>
+              <th scope="col" className="px-5 py-3">Status</th>
+              <th scope="col" className="px-5 py-3">Documents</th>
+              <th scope="col" className="px-5 py-3">Submitted</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-line">
             {filtered.map((r) => {
               const sub = r.submissions;
               const name = sub?.first_name && sub?.surname ? `${sub.first_name} ${sub.surname}` : r.full_name;
+              const initials = name.split(/\s+/).map((p) => p[0]).slice(0, 2).join("").toUpperCase();
               return (
-                <tr key={r.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3">
-                    <Link href={`/admin/candidates/${r.id}`} className="font-medium text-brand hover:underline">
-                      {name}
+                <tr key={r.id} className="group hover:bg-mist">
+                  <td className="px-5 py-3.5">
+                    <Link href={`/admin/candidates/${r.id}`} className="flex items-center gap-3">
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-50 text-[13px] font-bold text-brand">
+                        {initials}
+                      </span>
+                      <span>
+                        <span className="block font-bold group-hover:text-brand group-hover:underline">{name}</span>
+                        <span className="block text-[13px] text-muted">{r.cohort}</span>
+                      </span>
                     </Link>
-                    <div className="text-xs text-slate-500">{r.cohort}</div>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">
+                  <td className="px-5 py-3.5 text-[14px] text-muted">
                     <div>{r.email}</div>
                     <div>{r.phone}</div>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{sub?.state_of_residence ?? "—"}</td>
-                  <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
-                  <td className="px-4 py-3 text-slate-600">
-                    {r.documents.length} uploaded
-                    {r.documents.length < totalDocs && r.status !== "shortlisted" && (
-                      <span className="text-xs text-slate-400"> (min. {totalDocs})</span>
-                    )}
+                  <td className="px-5 py-3.5 text-muted">{sub?.state_of_residence ?? "Not given"}</td>
+                  <td className="px-5 py-3.5"><StatusBadge status={r.status} /></td>
+                  <td className="px-5 py-3.5">
+                    <DocMeter count={r.documents.filter((d) => coreDocs.includes(d.doc_type)).length} required={requiredDocs} />
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{formatDateTime(sub?.submitted_at) || "—"}</td>
+                  <td className="whitespace-nowrap px-5 py-3.5 text-[14px] text-muted">{formatDateTime(sub?.submitted_at) || "Not yet"}</td>
                 </tr>
               );
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-slate-500">
-                  {rows.length === 0 ? "No one on the shortlist yet. Add candidates to get started." : "No candidates match."}
+                <td colSpan={6} className="px-5 py-14 text-center text-muted">
+                  {rows.length === 0 ? (
+                    <>
+                      No one is on the shortlist yet.{" "}
+                      <Link href="/admin/shortlist" className="font-semibold text-brand underline underline-offset-2">
+                        Add your first candidates
+                      </Link>
+                    </>
+                  ) : (
+                    "No candidates match this filter."
+                  )}
                 </td>
               </tr>
             )}
@@ -132,14 +159,33 @@ export default async function AdminHome({
   );
 }
 
-function StatCard({ label, value, href, active }: { label: string; value: number; href: string; active: boolean }) {
+function PipelineCell({
+  label, value, href, active, highlight,
+}: { label: string; value: number; href: string; active: boolean; highlight?: boolean }) {
   return (
     <Link
       href={href}
-      className={`rounded-xl border p-3 ${active ? "border-brand bg-brand/5" : "border-slate-200 bg-white hover:border-slate-300"}`}
+      aria-current={active ? "true" : undefined}
+      className={`relative border-b border-r border-line px-4 py-4 last:border-r-0 lg:border-b-0 ${
+        active ? "bg-brand-50" : "hover:bg-mist"
+      }`}
     >
-      <div className="text-2xl font-bold text-slate-900">{value}</div>
-      <div className="text-xs text-slate-600">{label}</div>
+      {active && <span aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-brand" />}
+      <span className={`block text-[1.75rem] font-extrabold leading-none ${highlight ? "text-accent-dark" : ""}`}>{value}</span>
+      <span className="mt-1.5 block text-[13px] font-semibold text-muted">{label}</span>
     </Link>
+  );
+}
+
+function DocMeter({ count, required }: { count: number; required: number }) {
+  return (
+    <span className="flex items-center gap-2 text-[14px] text-muted">
+      <span className="flex gap-0.5" aria-hidden>
+        {Array.from({ length: required }).map((_, i) => (
+          <span key={i} className={`h-2 w-3 rounded-sm ${i < count ? "bg-brand" : "bg-line"}`} />
+        ))}
+      </span>
+      {count} of {required}
+    </span>
   );
 }

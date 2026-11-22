@@ -75,40 +75,59 @@ export function DocumentUploader({
   }
 
   return (
-    <li className="rounded-xl border border-slate-200 p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-slate-900">
-            {spec.label}
-            {required ? <span className="text-rose-600"> *</span> : <span className="font-normal text-slate-500"> (optional)</span>}
-          </p>
-          {spec.help && <p className="mt-0.5 text-xs text-slate-500">{spec.help}</p>}
+    <li className="flex flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-5">
+      <div className="flex min-w-0 flex-1 items-start gap-3">
+        <span
+          aria-hidden
+          className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full ${
+            existing ? "bg-brand text-white" : "border-2 border-dashed border-line"
+          }`}
+        >
           {existing && (
-            <p className="mt-2 flex items-center gap-2 text-xs text-emerald-700">
-              <span aria-hidden>✓</span>
+            <svg viewBox="0 0 12 12" className="h-3 w-3">
+              <path d="M2.5 6.5l2.2 2.2 4.8-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+        </span>
+        <div className="min-w-0">
+          <p className="text-[15px] font-bold">
+            {spec.label}
+            {!required && <span className="font-normal text-muted"> (optional)</span>}
+          </p>
+          {existing ? (
+            <p className="mt-0.5 flex min-w-0 items-center gap-2 text-sm text-muted">
               <span className="truncate">{existing.file_name ?? "Uploaded"}</span>
-              <button type="button" onClick={view} className="font-medium text-brand underline">
+              <button type="button" onClick={view} className="shrink-0 font-semibold text-brand underline underline-offset-2">
                 View
               </button>
             </p>
+          ) : (
+            spec.help && <p className="mt-0.5 text-sm text-muted">{spec.help}</p>
           )}
-          {error && <p className="mt-2 text-xs text-rose-600">{error}</p>}
+          {error && <p role="alert" className="mt-1 text-sm font-semibold text-red-800">{error}</p>}
         </div>
-        <div>
-          <input
-            ref={inputRef}
-            type="file"
-            accept={spec.accept}
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) void handleFile(file);
-            }}
-          />
-          <button type="button" className="btn-secondary" disabled={busy} onClick={() => inputRef.current?.click()}>
-            {busy ? "Uploading…" : existing ? "Replace" : "Upload"}
-          </button>
-        </div>
+      </div>
+      <div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept={spec.accept}
+          className="sr-only"
+          tabIndex={-1}
+          aria-label={`Upload ${spec.label}`}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) void handleFile(file);
+          }}
+        />
+        <button
+          type="button"
+          className={existing ? "btn-secondary" : "btn-primary"}
+          disabled={busy}
+          onClick={() => inputRef.current?.click()}
+        >
+          {busy ? "Uploading…" : existing ? "Replace file" : "Upload file"}
+        </button>
       </div>
     </li>
   );
