@@ -32,12 +32,14 @@ export default async function CandidatePage({ params }: { params: Promise<{ id: 
   const docs = (entry.documents ?? []) as { doc_type: string; storage_path: string; file_name: string | null }[];
   const status = entry.status as CandidateStatus;
 
-  let urls: Record<string, string> = {};
+  const urls: Record<string, string> = {};
   if (docs.length) {
     const { data: signed } = await supabase.storage
       .from(BUCKET)
       .createSignedUrls(docs.map((d) => d.storage_path), 60 * 60);
-    urls = Object.fromEntries((signed ?? []).filter((s) => s.signedUrl).map((s) => [s.path ?? "", s.signedUrl]));
+    for (const s of signed ?? []) {
+      if (s.path && s.signedUrl) urls[s.path] = s.signedUrl;
+    }
   }
 
   const photo = docs.find((d) => d.doc_type === "passport_photo");
