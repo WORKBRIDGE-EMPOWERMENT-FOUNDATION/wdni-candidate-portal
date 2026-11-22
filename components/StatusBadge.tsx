@@ -3,7 +3,7 @@ import { STATUS_LABELS, type CandidateStatus } from "@/lib/constants";
 const STYLES: Record<CandidateStatus, { pill: string; dot: string }> = {
   shortlisted: { pill: "bg-mist text-muted ring-line", dot: "bg-muted/50" },
   in_progress: { pill: "bg-brand-50 text-brand-dark ring-brand-100", dot: "bg-brand" },
-  submitted: { pill: "bg-accent-soft text-[#8a3a0c] ring-accent-light", dot: "bg-accent" },
+  submitted: { pill: "bg-amber-50 text-amber-900 ring-amber-200", dot: "bg-amber-500" },
   needs_changes: { pill: "bg-orange-50 text-orange-900 ring-orange-200", dot: "bg-orange-500" },
   approved: { pill: "bg-emerald-50 text-emerald-900 ring-emerald-200", dot: "bg-emerald-600" },
   rejected: { pill: "bg-red-50 text-red-900 ring-red-200", dot: "bg-red-600" },

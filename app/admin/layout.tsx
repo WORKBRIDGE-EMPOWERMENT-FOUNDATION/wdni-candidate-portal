@@ -13,10 +13,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <header className="bg-navy-900 text-white">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link href="/admin" className="flex items-center gap-3">
-            <BrandMark size="sm" onDark />
+            <BrandMark />
             <span className="leading-tight">
               <span className="block font-display text-[15px] font-bold">WDNI HR console</span>
-              <span className="block text-xs text-white/60">Candidate verification</span>
+              <span className="block text-xs text-white/60">Women Drive Nigeria Initiative</span>
             </span>
           </Link>
           <div className="flex items-center gap-2">

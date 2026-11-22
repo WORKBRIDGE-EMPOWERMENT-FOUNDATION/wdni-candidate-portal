@@ -4,7 +4,7 @@ import { RouteMap } from "@/components/RouteMap";
 import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_WHATSAPP, PHONE_SIGNIN } from "@/lib/constants";
 
 const CHECKLIST = [
-  "Access to the email address you applied with",
+  PHONE_SIGNIN ? "The email address or phone number you applied with" : "Access to the email address you applied with",
   "Your NIN (11 digits)",
   "Details of your next of kin",
   "Details of a guarantor who knows you well",
@@ -23,7 +23,7 @@ export default function Home() {
         <section className="bg-navy-900 text-white">
           <div className="mx-auto max-w-6xl px-4 pb-14 pt-14 sm:px-6 lg:pt-20">
             <div className="max-w-2xl">
-              <p className="text-[15px] font-bold text-accent-light">Pioneer 100 shortlist</p>
+              <p className="text-[15px] font-bold text-accent">Pioneer 100 shortlist</p>
               <h1 className="mt-3 text-[2.4rem] leading-[1.1] sm:text-[3.4rem]">
                 Complete your candidate file
               </h1>
@@ -71,12 +71,12 @@ export default function Home() {
             </ol>
           </div>
 
-          <div className="self-start rounded-2xl border border-accent-light/50 bg-accent-soft p-6 sm:p-8">
+          <div className="self-start rounded-2xl border border-brand-100 bg-accent-soft p-6 sm:p-8">
             <h2 className="text-lg">Have these ready</h2>
-            <ul className="mt-5 divide-y divide-accent-light/40">
+            <ul className="mt-5 divide-y divide-brand-100">
               {CHECKLIST.map((item) => (
                 <li key={item} className="flex items-start gap-3 py-2.5 text-[15px]">
-                  <span className="mt-[7px] h-2 w-2 shrink-0 rounded-full bg-accent" aria-hidden />
+                  <span className="mt-[7px] h-2 w-2 shrink-0 rounded-full bg-brand" aria-hidden />
                   {item}
                 </li>
               ))}

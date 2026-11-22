@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { PHONE_SIGNIN } from "@/lib/constants";
 import { addCandidate, importCsv, type FormState } from "../actions";
 
 function Feedback({ state }: { state: FormState }) {
@@ -38,10 +39,10 @@ export function ShortlistForms({ invite }: { invite: string }) {
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="email" className="field-label">Email</label>
-            <input id="email" name="email" type="email" required className="input mt-1.5" />
+            <input id="email" name="email" type="email" required={!PHONE_SIGNIN} className="input mt-1.5" />
           </div>
           <div>
-            <label htmlFor="phone" className="field-label">Phone <span className="font-normal text-muted">(optional)</span></label>
+            <label htmlFor="phone" className="field-label">Phone{!PHONE_SIGNIN && <span className="font-normal text-muted"> (optional)</span>}</label>
             <input id="phone" name="phone" type="tel" placeholder="0803 123 4567" className="input mt-1.5" />
           </div>
         </div>

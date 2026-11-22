@@ -1,10 +1,14 @@
 /**
- * Workbridge logo. The file lives at public/workbridge-logo.png (copied from workbridgefoundation.org).
- * The logo has dark lettering, so on dark backgrounds it sits on a white chip.
+ * WDNI round mark (public/wdni-mark.png) and full stacked logo (public/wdni-logo.png),
+ * both copied from wdni.ng. Transparent backgrounds, so they work on light and dark.
  */
-export function BrandMark({ size = "md", onDark = false }: { size?: "sm" | "md" | "lg"; onDark?: boolean }) {
-  const height = size === "lg" ? "h-14" : size === "sm" ? "h-8" : "h-10";
+export function BrandMark({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
+  const px = size === "lg" ? 56 : size === "sm" ? 32 : 40;
   // eslint-disable-next-line @next/next/no-img-element
-  const img = <img src="/workbridge-logo.png" alt="Workbridge Empowerment Foundation" width={1059} height={567} className={`${height} w-auto`} />;
-  return onDark ? <span className="inline-flex rounded-xl bg-white px-3 py-1.5">{img}</span> : img;
+  return <img src="/wdni-mark.png" alt="WDNI" width={px} height={px} className="shrink-0" style={{ width: px, height: px }} />;
+}
+
+export function BrandLogo({ width = 160 }: { width?: number }) {
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src="/wdni-logo.png" alt="Women Drive Nigeria Initiative" width={width} height={Math.round((width * 765) / 791)} />;
 }

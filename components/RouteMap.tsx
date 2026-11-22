@@ -37,7 +37,7 @@ export function RouteMap({ current = 1 }: { current?: number }) {
             >
               {state === "current" && <span className="h-2 w-2 rounded-full bg-accent" />}
               {state === "done" && (
-                <svg viewBox="0 0 12 12" className="h-3 w-3 text-white" aria-hidden>
+                <svg viewBox="0 0 12 12" className="h-3 w-3 text-navy-950" aria-hidden>
                   <path d="M2.5 6.5l2.2 2.2 4.8-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               )}
@@ -47,7 +47,7 @@ export function RouteMap({ current = 1 }: { current?: number }) {
                 {stage.title}
               </p>
               {state === "current" ? (
-                <p className="mt-1 inline-block rounded bg-accent px-1.5 pb-0.5 pt-1 text-xs font-bold leading-none text-white">
+                <p className="mt-1 inline-block rounded bg-accent px-1.5 pb-0.5 pt-1 text-xs font-bold leading-none text-navy-950">
                   You are here
                 </p>
               ) : (

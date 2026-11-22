@@ -126,7 +126,7 @@ export function PortalForm({
                   <span
                     className={`relative z-10 grid h-[25px] w-[25px] shrink-0 place-items-center rounded-full border-[3px] ${
                       active
-                        ? "border-accent bg-white"
+                        ? "border-accent-dark bg-white"
                         : done
                           ? "border-brand bg-brand"
                           : "border-line bg-white group-hover:border-muted/50"
@@ -157,7 +157,7 @@ export function PortalForm({
               <span
                 key={s.id}
                 className={`h-1.5 flex-1 rounded-full ${
-                  i === step ? "bg-accent" : sectionComplete[s.id] ? "bg-brand" : "bg-line"
+                  i === step ? "bg-accent-dark" : sectionComplete[s.id] ? "bg-brand" : "bg-line"
                 }`}
               />
             ))}
@@ -226,7 +226,7 @@ export function PortalForm({
             {current.id === "review" && (
               <div className="space-y-6">
                 {!readyToSubmit && (
-                  <div className="rounded-lg border-l-4 border-accent bg-accent-soft px-4 py-4 text-[15px] text-ink">
+                  <div className="rounded-lg border-l-4 border-amber-400 bg-amber-50 px-4 py-4 text-[15px] text-ink">
                     <p className="font-bold">A few things are still missing</p>
                     <ul className="mt-2 space-y-1">
                       {SECTIONS.filter((s) => !sectionComplete[s.id]).map((s) => (

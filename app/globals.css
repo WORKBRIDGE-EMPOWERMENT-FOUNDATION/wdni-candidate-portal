@@ -1,30 +1,30 @@
 @import "tailwindcss";
 
-/* Workbridge Empowerment Foundation brand, taken from workbridgefoundation.org */
+/* Women Drive Nigeria Initiative brand, taken from wdni.ng */
 @theme {
-  --color-navy-950: #111c29;
-  --color-navy-900: #1e252f;
-  --color-brand: #0858a8;
-  --color-brand-dark: #06427e;
-  --color-brand-100: #d6e5f5;
-  --color-brand-50: #edf4fc;
-  --color-accent: #f07028;
-  --color-accent-dark: #d45a16;
-  --color-accent-light: #ffb277;
-  --color-accent-soft: #fff7ed;
-  --color-mist: #f5f9fe;
-  --color-ink: #1e252f;
-  --color-muted: #475467;
-  --color-line: #e5e8ec;
+  --color-navy-950: #060f1e;
+  --color-navy-900: #09162a;
+  --color-brand: #118b73;
+  --color-brand-dark: #0b6b58;
+  --color-brand-100: #cdeae2;
+  --color-brand-50: #eaf6f2;
+  --color-accent: #b7e769;
+  --color-accent-dark: #8cc63f;
+  --color-accent-light: #d6f2a8;
+  --color-accent-soft: #e9f0e5;
+  --color-mist: #f4f7f9;
+  --color-ink: #09162a;
+  --color-muted: #66758d;
+  --color-line: #dde5ea;
 }
 
 @theme inline {
-  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: var(--font-quicksand), var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
-  h1, h2, h3 { font-family: var(--font-display); font-weight: 700; }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.01em; }
 }
 
 body {
@@ -33,7 +33,7 @@ body {
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-accent);
+  outline: 3px solid var(--color-brand);
   outline-offset: 2px;
 }
 
@@ -57,7 +57,7 @@ body {
     disabled:cursor-not-allowed disabled:opacity-45;
 }
 @utility btn-primary { @apply btn bg-brand text-white hover:bg-brand-dark; }
-@utility btn-accent { @apply btn bg-accent text-white hover:bg-accent-dark; }
+@utility btn-accent { @apply btn bg-accent text-navy-950 hover:bg-accent-dark; }
 @utility btn-secondary { @apply btn border border-line bg-white text-ink hover:border-muted/50 hover:bg-mist; }
 @utility btn-danger { @apply btn border border-red-300 bg-white text-red-800 hover:bg-red-50; }
 

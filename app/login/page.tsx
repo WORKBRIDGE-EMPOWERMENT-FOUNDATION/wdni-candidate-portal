@@ -19,10 +19,10 @@ export default async function LoginPage() {
     <main className="grid min-h-screen lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-navy-900 p-12 text-white lg:flex">
         <Link href="/" className="flex items-center gap-3">
-          <BrandMark size="lg" onDark />
+          <BrandMark size="lg" />
         </Link>
         <div className="relative z-10 max-w-sm">
-          <p className="text-[15px] font-bold text-accent-light">Pioneer 100 candidate portal</p>
+          <p className="text-[15px] font-bold text-accent">Pioneer 100 candidate portal</p>
           <h1 className="mt-2 text-4xl leading-[1.1]">Women Drive Nigeria Initiative</h1>
           <p className="mt-4 text-lg leading-relaxed text-white/75">
             Sign in to complete or check your candidate file.

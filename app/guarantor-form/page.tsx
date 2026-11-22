@@ -1,5 +1,5 @@
 import { PrintButton } from "@/components/PrintButton";
-import { BrandMark } from "@/components/BrandMark";
+import { BrandLogo } from "@/components/BrandMark";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata = { title: "WDNI Guarantor Form" };
@@ -22,7 +22,7 @@ export default function GuarantorFormPage() {
       </div>
 
       <header className="border-b-2 border-brand pb-4 text-center">
-        <div className="mb-3 flex justify-center"><BrandMark size="lg" /></div>
+        <div className="mb-3 flex justify-center"><BrandLogo width={110} /></div>
         <p className="text-sm text-muted">Workbridge Empowerment Foundation</p>
         <h1 className="mt-1 text-xl font-bold">Women Drive Nigeria Initiative (WDNI)</h1>
         <p className="text-lg font-semibold">Guarantor Form</p>

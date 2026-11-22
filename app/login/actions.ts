@@ -34,11 +34,21 @@ export async function requestOtp(identifier: string): Promise<RequestResult> {
     .select("id")
     .eq(channel, target)
     .maybeSingle();
-  if (lookupError) return { ok: false, error: "Something went wrong. Please try again in a moment." };
+  if (lookupError) {
+    console.error("[requestOtp] shortlist lookup failed:", lookupError);
+    return {
+      ok: false,
+      error:
+        process.env.NODE_ENV === "production"
+          ? "Something went wrong. Please try again in a moment."
+          : `Shortlist lookup failed: ${lookupError.code ?? ""} ${lookupError.message}`,
+    };
+  }
 
   let allowed = !!entry;
   if (!allowed && channel === "email") {
-    const { data: admin } = await service.from("admins").select("email").eq("email", target).maybeSingle();
+    const { data: admin, error: adminError } = await service.from("admins").select("email").eq("email", target).maybeSingle();
+    if (adminError) console.error("[requestOtp] admins lookup failed:", adminError);
     allowed = !!admin;
   }
   if (!allowed) {
@@ -59,6 +69,7 @@ export async function requestOtp(identifier: string): Promise<RequestResult> {
       : await supabase.auth.signInWithOtp({ phone: target, options: { shouldCreateUser: true, channel: "sms" } });
 
   if (error) {
+    console.error("[requestOtp] sending code failed:", error.status, error.message);
     if (error.status === 429 || /rate|seconds/i.test(error.message)) {
       return { ok: false, error: "Too many attempts. Please wait a minute and try again." };
     }
@@ -77,7 +88,16 @@ export async function verifyOtp(channel: Channel, target: string, token: string)
     channel === "email"
       ? await supabase.auth.verifyOtp({ email: target, token: code, type: "email" })
       : await supabase.auth.verifyOtp({ phone: target, token: code, type: "sms" });
-  if (error) return { ok: false, error: "That code is incorrect or has expired. Request a new one." };
+  if (error) {
+    console.error("[verifyOtp] failed:", error.status, error.code, error.message);
+    return {
+      ok: false,
+      error:
+        process.env.NODE_ENV === "production"
+          ? "That code is incorrect or has expired. Request a new one."
+          : `Code rejected: ${error.code ?? error.status ?? ""} ${error.message}`,
+    };
+  }
 
   const { data: isAdmin } = await supabase.rpc("is_admin");
   return { ok: true, redirectTo: isAdmin ? "/admin" : "/portal" };

@@ -171,7 +171,7 @@ function PipelineCell({
       }`}
     >
       {active && <span aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-brand" />}
-      <span className={`block text-[1.75rem] font-extrabold leading-none ${highlight ? "text-accent-dark" : ""}`}>{value}</span>
+      <span className={`block text-[1.75rem] font-extrabold leading-none ${highlight ? "text-amber-700" : ""}`}>{value}</span>
       <span className="mt-1.5 block text-[13px] font-semibold text-muted">{label}</span>
     </Link>
   );
