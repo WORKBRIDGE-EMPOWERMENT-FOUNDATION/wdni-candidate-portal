@@ -1,7 +1,7 @@
 import "server-only";
 
 /** Sends one SMS through Termii (https://developers.termii.com/messaging-api). */
-export async function sendTermiiSms(to: string, message: string): Promise<{ ok: true } | { ok: false; error: string }> {
+export async function sendTermiiSms(to: string, message: string): Promise<{ ok: true; messageId: string } | { ok: false; error: string }> {
   const apiKey = process.env.TERMII_API_KEY;
   const baseUrl = process.env.TERMII_BASE_URL?.replace(/\/+$/, "");
   const senderId = process.env.TERMII_SENDER_ID;
@@ -28,7 +28,7 @@ export async function sendTermiiSms(to: string, message: string): Promise<{ ok: 
     if (!res.ok || !data?.message_id) {
       return { ok: false, error: `Termii rejected the message (${res.status}): ${data?.message ?? "no details"}` };
     }
-    return { ok: true };
+    return { ok: true, messageId: data.message_id };
   } catch (err) {
     return { ok: false, error: `Could not reach Termii: ${err instanceof Error ? err.message : String(err)}` };
   }

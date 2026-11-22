@@ -19,7 +19,7 @@ export function RouteMap({ current = 1 }: { current?: number }) {
           <li key={stage.title} className="relative flex gap-4 pb-7 last:pb-0 lg:flex-col lg:gap-4 lg:pb-0 lg:pr-4">
             {!last &&
               (i < current ? (
-                <span aria-hidden className="absolute left-[11px] top-6 h-full w-[3px] bg-accent lg:left-3 lg:top-[11px] lg:h-[3px] lg:w-full" />
+                <span aria-hidden className="absolute left-[11px] top-6 h-full w-[3px] origin-top animate-draw-y bg-accent [animation-delay:700ms] lg:left-3 lg:top-[11px] lg:h-[3px] lg:w-full lg:origin-left lg:animate-draw-x" />
               ) : (
                 <>
                   <span aria-hidden className="dash-y absolute left-[11px] top-7 h-[calc(100%-8px)] w-[3px] text-white/30 lg:hidden" />
@@ -31,7 +31,7 @@ export function RouteMap({ current = 1 }: { current?: number }) {
                 state === "done"
                   ? "border-accent bg-accent"
                   : state === "current"
-                    ? "border-accent bg-navy-950"
+                    ? "animate-beacon border-accent bg-navy-950 [animation-delay:1.5s]"
                     : "border-white/35 bg-navy-950"
               }`}
             >

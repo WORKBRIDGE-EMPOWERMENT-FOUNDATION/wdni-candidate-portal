@@ -35,6 +35,8 @@ export async function POST(request: Request) {
     return hookError(502, "We couldn't send the SMS. Please try again or sign in with your email address.");
   }
 
+  // Last 4 digits only, so logs don't hold full phone numbers. Match message_id against Termii's SMS log.
+  console.log("[send-sms hook] sent", { to: `…${phone.slice(-4)}`, messageId: result.messageId });
   return Response.json({});
 }
 

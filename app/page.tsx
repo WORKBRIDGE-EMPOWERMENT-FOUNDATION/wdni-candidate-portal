@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { RouteMap } from "@/components/RouteMap";
@@ -21,25 +22,37 @@ export default function Home() {
 
       <main>
         <section className="bg-navy-900 text-white">
-          <div className="mx-auto max-w-6xl px-4 pb-14 pt-14 sm:px-6 lg:pt-20">
+          <div className="relative overflow-hidden">
+            {/* Decorative photo on wide screens only, so phones on mobile data skip the download. */}
+            <div aria-hidden className="absolute inset-y-0 right-0 hidden w-[46%] overflow-hidden lg:block">
+              {/* Same photo as wdni.ng. Crop keeps the driver (left of the photo) in view. */}
+              <Image src="/wdni-hero.jpg" alt="" fill priority sizes="46vw" className="animate-photo-in object-cover object-[22%_center]" />
+              <div className="absolute inset-y-0 left-0 w-2/5 bg-linear-to-r from-navy-900 to-transparent" />
+              <div className="absolute inset-0 bg-navy-900/15" />
+              <div className="absolute inset-x-0 bottom-0 h-28 bg-linear-to-t from-navy-900 to-transparent" />
+            </div>
+          <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-14 sm:px-6 lg:pb-20 lg:pt-20">
             <div className="max-w-2xl">
-              <p className="text-[15px] font-bold text-accent">Pioneer 100 shortlist</p>
-              <h1 className="mt-3 text-[2.4rem] leading-[1.1] sm:text-[3.4rem]">
+              <p className="animate-rise text-[15px] font-bold text-accent">Pioneer 100 shortlist</p>
+              <h1 className="animate-rise mt-3 text-[2.4rem] [animation-delay:80ms] leading-[1.1] sm:text-[3.4rem]">
                 Complete your candidate file
               </h1>
-              <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/80">
+              <p className="animate-rise mt-5 max-w-xl text-lg [animation-delay:160ms] leading-relaxed text-white/80">
                 You have been shortlisted for the Women Drive Nigeria Initiative. Give us your details and documents
                 so we can verify them before training begins.
               </p>
-              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+              <div className="animate-rise mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 [animation-delay:240ms]">
                 <Link href="/login" className="btn-accent px-6 py-3 text-base">
                   Start my candidate file
                 </Link>
                 <span className="text-sm text-white/65">About 20 minutes. Your progress is saved.</span>
               </div>
             </div>
+          </div>
+          </div>
 
-            <div className="mt-16 border-t border-white/15 pt-10">
+          <div className="mx-auto max-w-6xl px-4 pb-14 sm:px-6">
+            <div className="animate-rise border-t border-white/15 pt-10 [animation-delay:380ms]">
               <h2 className="mb-6 text-sm font-semibold text-white/65">Your route through WDNI</h2>
               <RouteMap current={1} />
             </div>
