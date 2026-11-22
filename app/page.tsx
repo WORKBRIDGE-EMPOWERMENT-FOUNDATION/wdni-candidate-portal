@@ -26,7 +26,10 @@ export default function Home() {
             {/* Decorative photo on wide screens only, so phones on mobile data skip the download. */}
             <div aria-hidden className="absolute inset-y-0 right-0 hidden w-[46%] overflow-hidden lg:block">
               {/* Same photo as wdni.ng. Crop keeps the driver (left of the photo) in view. */}
-              <Image src="/wdni-hero.jpg" alt="" fill priority sizes="46vw" className="animate-photo-in object-cover object-[22%_center]" />
+              {/* Drives in from the right on load, then drifts slowly so the scene feels in motion. */}
+              <div className="absolute inset-0 animate-drive-in">
+                <Image src="/wdni-hero.jpg" alt="" fill priority sizes="46vw" className="animate-drift object-cover object-[22%_center]" />
+              </div>
               <div className="absolute inset-y-0 left-0 w-2/5 bg-linear-to-r from-navy-900 to-transparent" />
               <div className="absolute inset-0 bg-navy-900/15" />
               <div className="absolute inset-x-0 bottom-0 h-28 bg-linear-to-t from-navy-900 to-transparent" />
