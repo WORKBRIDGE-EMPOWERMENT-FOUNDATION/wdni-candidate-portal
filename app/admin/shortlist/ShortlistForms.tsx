@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import { PHONE_SIGNIN } from "@/lib/constants";
 import { addCandidate, importCsv, type FormState } from "../actions";
@@ -94,7 +95,11 @@ export function ShortlistForms({ invite }: { invite: string }) {
             {copied ? "Copied" : "Copy"}
           </button>
         </div>
-        <p className="text-[15px] text-muted">Send this to shortlisted candidates by email, SMS or WhatsApp.</p>
+        <p className="text-[15px] text-muted">
+          Copy this for SMS or WhatsApp. To email everyone at once, use{" "}
+          <Link href="/admin/messages" className="font-semibold text-brand underline underline-offset-2">Email candidates</Link>,
+          where you can edit it before sending.
+        </p>
         <pre className="whitespace-pre-wrap rounded-md border border-line bg-mist p-4 font-sans text-[15px] leading-relaxed">{invite}</pre>
       </div>
     </div>

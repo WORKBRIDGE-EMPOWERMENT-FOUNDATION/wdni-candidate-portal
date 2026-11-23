@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const LINKS = [
   { href: "/admin", label: "Candidates", match: (p: string) => p === "/admin" || p.startsWith("/admin/candidates") },
   { href: "/admin/shortlist", label: "Add to shortlist", match: (p: string) => p.startsWith("/admin/shortlist") },
+  { href: "/admin/messages", label: "Email candidates", match: (p: string) => p.startsWith("/admin/messages") },
 ];
 
 export function AdminNav() {

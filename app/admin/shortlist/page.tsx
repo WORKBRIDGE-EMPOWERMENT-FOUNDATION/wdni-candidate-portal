@@ -1,20 +1,13 @@
 import { requireAdmin } from "@/lib/auth";
 import { PHONE_SIGNIN } from "@/lib/constants";
+import { defaultInvite } from "@/lib/invite";
 import { ShortlistForms } from "./ShortlistForms";
 
 export default async function ShortlistPage() {
   await requireAdmin();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
-  const invite =
-    `Congratulations! You have been shortlisted for the Women Drive Nigeria Initiative (WDNI) Pioneer 100.\n\n` +
-    `Please complete your biodata and upload your documents at ${siteUrl || "[portal link]"}\n` +
-    (PHONE_SIGNIN
-      ? `Sign in with the email address or phone number you applied with. You will receive a one-time code.\n\n`
-      : `Sign in with the email address you applied with. We will email you a one-time code (check your spam folder if you can't see it).\n\n`) +
-    `Have these ready: your NIN, next of kin and guarantor details, a passport photograph, your NIN slip, ` +
-    `a signed guarantor form, a medical fitness certificate, and your driver's licence if you have one.\n\n` +
-    `Workbridge Empowerment Foundation`;
+  const invite = defaultInvite(siteUrl);
 
   return (
     <div className="space-y-6">
