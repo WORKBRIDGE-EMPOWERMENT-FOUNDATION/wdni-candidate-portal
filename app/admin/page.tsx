@@ -2,7 +2,7 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/StatusBadge";
 import { requireAdmin } from "@/lib/auth";
 import { STATUSES, STATUS_LABELS, formatDateTime, one, type CandidateStatus } from "@/lib/constants";
-import { DOCUMENTS } from "@/lib/form-config";
+import { ACTIVE_DOCUMENTS } from "@/lib/form-config";
 
 type Row = {
   id: string;
@@ -53,8 +53,8 @@ export default async function AdminHome({
       .some((x) => String(x).toLowerCase().includes(term));
   });
 
-  // Documents every candidate must upload (licence is only needed by those who have one).
-  const coreDocs = DOCUMENTS.filter((d) => d.type !== "education_certificate" && d.type !== "drivers_licence").map((d) => d.type);
+  // Documents every candidate must upload at this stage (licence is only needed by those who have one).
+  const coreDocs = ACTIVE_DOCUMENTS.filter((d) => d.type !== "education_certificate" && d.type !== "drivers_licence").map((d) => d.type);
   const requiredDocs = coreDocs.length;
 
   // The pipeline reads left to right in the order a candidate moves through it.

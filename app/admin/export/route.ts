@@ -1,7 +1,8 @@
 import ExcelJS from "exceljs";
 import { requireAdmin } from "@/lib/auth";
 import { STATUS_LABELS, one, type CandidateStatus } from "@/lib/constants";
-import { ALL_FIELDS, DOCUMENTS, displayValue, fromDbRow, isVisible } from "@/lib/form-config";
+// Only the current stage's questions and documents (guarantor and medical columns appear once they are collected).
+import { ACTIVE_FIELDS as ALL_FIELDS, ACTIVE_DOCUMENTS as DOCUMENTS, displayValue, fromDbRow, isVisible } from "@/lib/form-config";
 
 export const dynamic = "force-dynamic";
 

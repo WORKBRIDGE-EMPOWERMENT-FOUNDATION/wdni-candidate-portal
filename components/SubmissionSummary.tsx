@@ -1,12 +1,19 @@
-import { DOCUMENTS, SECTIONS, displayValue, isVisible, type Values } from "@/lib/form-config";
+import { ACTIVE_DOCUMENTS, ACTIVE_SECTIONS, DOCUMENTS, SECTIONS, displayValue, isVisible, type Values } from "@/lib/form-config";
 
 export type SummaryDoc = { type: string; fileName: string | null; url?: string | null };
 
 /** Read-only view of a candidate file. Used on the review step, after submission, and in the HR console. */
 export function SubmissionSummary({ values, docs }: { values: Values; docs: SummaryDoc[] }) {
+  // Sections and documents for the current stage. Later-stage ones (guarantor, medical) only appear
+  // if something was already entered or uploaded for them, so no information on file is hidden.
+  const sections = SECTIONS.filter(
+    (s) => ACTIVE_SECTIONS.includes(s) || s.fields.some((f) => (values[f.name] ?? "").trim()),
+  );
+  const documents = DOCUMENTS.filter((d) => ACTIVE_DOCUMENTS.includes(d) || docs.some((x) => x.type === d.type));
+
   return (
     <div className="divide-y divide-line rounded-lg border border-line bg-white">
-      {SECTIONS.map((section) => (
+      {sections.map((section) => (
         <section key={section.id} className="grid gap-4 px-5 py-5 md:grid-cols-[180px_minmax(0,1fr)] md:gap-8">
           <h3 className="text-[15px]">{section.title}</h3>
           <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
@@ -25,9 +32,9 @@ export function SubmissionSummary({ values, docs }: { values: Values; docs: Summ
       <section className="grid gap-4 px-5 py-5 md:grid-cols-[180px_minmax(0,1fr)] md:gap-8">
         <h3 className="text-[15px]">Documents</h3>
         <ul className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
-          {DOCUMENTS.map((d) => {
+          {documents.map((d) => {
             const doc = docs.find((x) => x.type === d.type);
-            const needed = d.required(values);
+            const needed = ACTIVE_DOCUMENTS.includes(d) && d.required(values);
             if (!doc && !needed && d.type === "drivers_licence") return null;
             return (
               <li key={d.type} className="min-w-0">
