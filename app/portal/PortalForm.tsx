@@ -9,6 +9,9 @@ import {
 import { saveDraft, submitApplication, type DocRecord } from "./actions";
 import { DocumentUploader } from "./DocumentUploader";
 
+/** "Passport photograph" → "passport photograph", but acronyms like "NIN slip…" are left as they are. */
+const lowerFirst = (t: string) => (/^[A-Z][a-z]/.test(t) ? t[0].toLowerCase() + t.slice(1) : t);
+
 const STEPS = [
   ...ACTIVE_SECTIONS.map((s) => ({ id: s.id, title: s.title })),
   { id: "documents", title: "Documents" },
@@ -239,14 +242,14 @@ export function PortalForm({
                       {ACTIVE_SECTIONS.filter((s) => !sectionComplete[s.id]).map((s) => (
                         <li key={s.id}>
                           <button className="font-semibold underline underline-offset-2" onClick={() => goTo(STEPS.findIndex((x) => x.id === s.id))}>
-                            Finish {s.title.toLowerCase()}
+                            Finish {lowerFirst(s.title)}
                           </button>
                         </li>
                       ))}
                       {missingDocs.map((d) => (
                         <li key={d.type}>
                           <button className="font-semibold underline underline-offset-2" onClick={() => goTo(STEPS.findIndex((x) => x.id === "documents"))}>
-                            Upload your {d.label.toLowerCase()}
+                            Upload your {lowerFirst(d.label)}
                           </button>
                         </li>
                       ))}

@@ -18,9 +18,9 @@ export function SubmissionSummary({ values, docs }: { values: Values; docs: Summ
           <h3 className="text-[15px]">{section.title}</h3>
           <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
             {section.fields.filter((f) => isVisible(f, values)).map((f) => (
-              <div key={f.name} className={f.wide ? "sm:col-span-2" : ""}>
+              <div key={f.name} className={`min-w-0 ${f.wide ? "sm:col-span-2" : ""}`}>
                 <dt className="text-[13px] text-muted">{f.label}</dt>
-                <dd className="mt-0.5 whitespace-pre-line text-[15px] font-semibold">
+                <dd className="mt-0.5 whitespace-pre-line text-[15px] font-semibold [overflow-wrap:anywhere]">
                   {displayValue(f, values) || <span className="font-normal text-muted/60">Not given</span>}
                 </dd>
               </div>
