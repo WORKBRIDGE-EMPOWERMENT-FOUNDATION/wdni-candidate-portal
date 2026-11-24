@@ -21,7 +21,15 @@ export type Field = {
   wide?: boolean;
 };
 
-export type Section = { id: string; title: string; description?: string; fields: Field[] };
+/** finalStage: collected later, for the final submission (see COLLECT_FINAL_STAGE). */
+export type Section = { id: string; title: string; description?: string; fields: Field[]; finalStage?: boolean };
+
+/**
+ * Guarantor and medical fitness are collected at a later stage, before training. While this is false the
+ * portal hides those sections and documents and candidates can submit without them. To collect them,
+ * set NEXT_PUBLIC_COLLECT_FINAL_STAGE=true and move candidates to "Needs changes" so they can add them.
+ */
+export const COLLECT_FINAL_STAGE = process.env.NEXT_PUBLIC_COLLECT_FINAL_STAGE === "true";
 
 export const NIGERIAN_STATES = [
   "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River",
@@ -65,7 +73,6 @@ export const SECTIONS: Section[] = [
           return null;
         },
       },
-      { name: "gender", label: "Gender", type: "select", required: true, options: ["Female", "Male"] },
       {
         name: "marital_status", label: "Marital status", type: "select", required: true,
         options: ["Single", "Married", "Divorced", "Separated", "Widowed"],
@@ -126,6 +133,7 @@ export const SECTIONS: Section[] = [
   {
     id: "guarantor",
     title: "Guarantor",
+    finalStage: true,
     description:
       "A responsible adult who knows you well and will vouch for you. They also sign the guarantor form you upload in the next step.",
     fields: [
@@ -142,6 +150,7 @@ export const SECTIONS: Section[] = [
   {
     id: "medical",
     title: "Health & fitness",
+    finalStage: true,
     description: "Used only to confirm you can train and drive safely. Kept confidential.",
     fields: [
       { name: "blood_group", label: "Blood group", type: "select",
@@ -162,6 +171,7 @@ export type DocSpec = {
   help?: string;
   required: (v: Values) => boolean;
   accept: string;
+  finalStage?: boolean;
 };
 
 export const DOCUMENTS: DocSpec[] = [
@@ -173,17 +183,22 @@ export const DOCUMENTS: DocSpec[] = [
     required: hasLicence, accept: "image/jpeg,image/png,application/pdf" },
   { type: "guarantor_form", label: "Signed guarantor form",
     help: "Download the form, have your guarantor fill and sign it, then upload a scan or clear photo.",
-    required: () => true, accept: "image/jpeg,image/png,application/pdf" },
+    required: () => true, accept: "image/jpeg,image/png,application/pdf", finalStage: true },
   { type: "medical_certificate", label: "Medical fitness certificate",
     help: "From a government or registered hospital, issued in the last 6 months.",
-    required: () => true, accept: "image/jpeg,image/png,application/pdf" },
+    required: () => true, accept: "image/jpeg,image/png,application/pdf", finalStage: true },
   { type: "education_certificate", label: "Highest education certificate", help: "Optional.",
     required: () => false, accept: "image/jpeg,image/png,application/pdf" },
 ];
 
 export const MAX_FILE_BYTES = 5 * 1024 * 1024;
 export const ALL_FIELDS: Field[] = SECTIONS.flatMap((s) => s.fields);
-export const FIELD_NAMES = new Set(ALL_FIELDS.map((f) => f.name));
+
+/** What candidates see and must complete right now. Admin views and the export still use everything. */
+export const ACTIVE_SECTIONS = SECTIONS.filter((s) => COLLECT_FINAL_STAGE || !s.finalStage);
+export const ACTIVE_FIELDS: Field[] = ACTIVE_SECTIONS.flatMap((s) => s.fields);
+export const ACTIVE_DOCUMENTS = DOCUMENTS.filter((d) => COLLECT_FINAL_STAGE || !d.finalStage);
+export const FIELD_NAMES = new Set(ACTIVE_FIELDS.map((f) => f.name));
 
 export const isVisible = (f: Field, v: Values) => !f.showIf || f.showIf(v);
 
@@ -212,13 +227,13 @@ export function validateFields(fields: Field[], v: Values): Record<string, strin
 }
 
 export function missingDocuments(v: Values, uploaded: string[]): DocSpec[] {
-  return DOCUMENTS.filter((d) => d.required(v) && !uploaded.includes(d.type));
+  return ACTIVE_DOCUMENTS.filter((d) => d.required(v) && !uploaded.includes(d.type));
 }
 
-/** Form values (strings) → database row. Hidden fields are cleared. */
+/** Form values (strings) → database row. Hidden fields are cleared; final-stage columns are left alone while not collected. */
 export function toDbRow(v: Values): Record<string, string | number | boolean | null> {
   const row: Record<string, string | number | boolean | null> = {};
-  for (const f of ALL_FIELDS) {
+  for (const f of ACTIVE_FIELDS) {
     const raw = (v[f.name] ?? "").trim();
     if (!raw || !isVisible(f, v)) {
       row[f.name] = null;

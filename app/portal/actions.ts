@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { BUCKET } from "@/lib/constants";
 import {
-  ALL_FIELDS, DOCUMENTS, FIELD_NAMES, MAX_FILE_BYTES, missingDocuments, toDbRow, validateFields, type Values,
+  ACTIVE_FIELDS, ACTIVE_DOCUMENTS, FIELD_NAMES, MAX_FILE_BYTES, missingDocuments, toDbRow, validateFields, type Values,
 } from "@/lib/form-config";
 
 type Result = { ok: true } | { ok: false; error: string; fieldErrors?: Record<string, string> };
@@ -35,7 +35,7 @@ export async function saveDraft(values: Values): Promise<Result> {
 
   const v = clean(values);
   const formatErrors = Object.fromEntries(
-    Object.entries(validateFields(ALL_FIELDS, v)).filter(([, msg]) => msg !== "This field is required."),
+    Object.entries(validateFields(ACTIVE_FIELDS, v)).filter(([, msg]) => msg !== "This field is required."),
   );
   if (Object.keys(formatErrors).length) {
     return { ok: false, error: "Please fix the highlighted fields.", fieldErrors: formatErrors };
@@ -71,7 +71,7 @@ export async function recordDocument(input: {
   const me = await currentCandidate();
   if (!me) return { ok: false, error: "Your session has expired. Please sign in again." };
 
-  if (!DOCUMENTS.some((d) => d.type === input.docType)) return { ok: false, error: "Unknown document type." };
+  if (!ACTIVE_DOCUMENTS.some((d) => d.type === input.docType)) return { ok: false, error: "Unknown document type." };
   if (!input.path.startsWith(`${me.user.id}/`)) return { ok: false, error: "Invalid file location." };
   if (input.size > MAX_FILE_BYTES) return { ok: false, error: "Files must be 5 MB or smaller." };
 
@@ -115,7 +115,7 @@ export async function submitApplication(values: Values, declarationAccepted: boo
   if (!declarationAccepted) return { ok: false, error: "Please tick the declaration to continue." };
 
   const v = clean(values);
-  const fieldErrors = validateFields(ALL_FIELDS, v);
+  const fieldErrors = validateFields(ACTIVE_FIELDS, v);
   if (Object.keys(fieldErrors).length) {
     return { ok: false, error: "Some answers are missing or need fixing. Go back to the highlighted sections.", fieldErrors };
   }

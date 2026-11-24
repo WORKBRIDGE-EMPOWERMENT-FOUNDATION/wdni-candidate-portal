@@ -58,7 +58,6 @@ export default async function PortalPage() {
     values.surname = rest.length ? rest[rest.length - 1] : "";
     values.email = (entry.email as string | null) ?? "";
     values.phone = entry.phone ? "0" + (normalizeNgPhone(entry.phone as string) ?? "").slice(4) : "";
-    values.gender = "Female";
   }
 
   const editable = status === "shortlisted" || status === "in_progress" || status === "needs_changes";

@@ -3,16 +3,17 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { RouteMap } from "@/components/RouteMap";
 import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_WHATSAPP, PHONE_SIGNIN } from "@/lib/constants";
+import { COLLECT_FINAL_STAGE } from "@/lib/form-config";
 
 const CHECKLIST = [
   PHONE_SIGNIN ? "The email address or phone number you applied with" : "Access to the email address you applied with",
   "Your NIN (11 digits)",
   "Details of your next of kin",
-  "Details of a guarantor who knows you well",
+  ...(COLLECT_FINAL_STAGE ? ["Details of a guarantor who knows you well"] : []),
   "A recent passport photograph",
   "Your NIN slip or National ID card",
   "Your driver's licence, if you have one",
-  "A medical fitness certificate",
+  ...(COLLECT_FINAL_STAGE ? ["A medical fitness certificate"] : []),
 ];
 
 export default function Home() {
@@ -70,7 +71,9 @@ export default function Home() {
                 ["Sign in with a code", PHONE_SIGNIN
                   ? "Use the email address or phone number you applied with. We send you a one-time code, so there's no password to remember."
                   : "Use the email address you applied with. We email you a one-time code, so there's no password to remember."],
-                ["Fill in your details", "Personal details, next of kin, driving experience, your guarantor and a few health questions."],
+                ["Fill in your details", COLLECT_FINAL_STAGE
+                  ? "Personal details, next of kin, driving experience, your guarantor and a few health questions."
+                  : "Personal details, next of kin and your driving experience."],
                 ["Upload your documents", "Clear photos or scans in JPG, PNG or PDF, up to 5 MB each. A phone camera is fine."],
                 ["Check and submit", "Review everything, confirm the declaration and submit. The WDNI team will contact you after review."],
               ].map(([title, text], i) => (
@@ -97,12 +100,18 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <p className="mt-5 text-sm text-muted">
-              You will also need a signed guarantor form.{" "}
-              <Link href="/guarantor-form" className="font-semibold text-brand underline underline-offset-2">
-                Download the guarantor form
-              </Link>
-            </p>
+            {COLLECT_FINAL_STAGE ? (
+              <p className="mt-5 text-sm text-muted">
+                You will also need a signed guarantor form.{" "}
+                <Link href="/guarantor-form" className="font-semibold text-brand underline underline-offset-2">
+                  Download the guarantor form
+                </Link>
+              </p>
+            ) : (
+              <p className="mt-5 text-sm text-muted">
+                A guarantor and a medical fitness certificate are not needed yet. We will ask for them before training.
+              </p>
+            )}
           </div>
         </section>
       </main>

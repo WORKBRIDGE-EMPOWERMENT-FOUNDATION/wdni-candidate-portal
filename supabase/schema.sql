@@ -203,12 +203,13 @@ begin
   if s.surname is null or s.first_name is null or s.date_of_birth is null
      or s.phone is null or s.nin is null or s.residential_address is null
      or s.nok_full_name is null or s.nok_phone is null
-     or s.guarantor_full_name is null or s.guarantor_phone is null
-     or s.has_drivers_licence is null or s.has_medical_condition is null then
+     or s.has_drivers_licence is null then
     raise exception 'Some required details are missing. Please check each section.';
   end if;
 
-  v_needed := array['passport_photo', 'nin_document', 'guarantor_form', 'medical_certificate']::doc_type[];
+  -- Guarantor and medical fitness are collected at a later stage; the app checks them when
+  -- NEXT_PUBLIC_COLLECT_FINAL_STAGE=true (lib/form-config.ts).
+  v_needed := array['passport_photo', 'nin_document']::doc_type[];
   if s.has_drivers_licence then v_needed := v_needed || 'drivers_licence'::doc_type; end if;
 
   select array_agg(t::text) into v_missing

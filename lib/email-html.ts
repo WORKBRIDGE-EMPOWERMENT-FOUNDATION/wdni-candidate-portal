@@ -20,7 +20,8 @@ function textToHtml(text: string) {
     .split(/\n{2,}/)
     .map((para) => {
       const html = escapeHtml(para)
-        .replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)]/g, (url) => `<a href="${url}" style="color:#118b73;">${url}</a>`)
+        .replace(/(^|[\s(])((?:https?:\/\/|www\.)[^\s<]+[^\s<.,;:!?)])/g, (_m, pre, url) =>
+          `${pre}<a href="${url.startsWith("www.") ? `https://${url}` : url}" style="color:#118b73;">${url}</a>`)
         .replace(/(^|[\s(])([\w.+-]+@[\w-]+\.[\w.-]*\w)/g, (_m, pre, email) =>
           `${pre}<a href="mailto:${email}" style="color:#118b73;">${email}</a>`)
         .replace(/\n/g, "<br>");

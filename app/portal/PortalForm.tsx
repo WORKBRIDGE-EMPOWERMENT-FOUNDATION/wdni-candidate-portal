@@ -4,13 +4,13 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { SubmissionSummary } from "@/components/SubmissionSummary";
 import {
-  DOCUMENTS, SECTIONS, isVisible, missingDocuments, validateFields, type Field, type Values,
+  ACTIVE_DOCUMENTS, ACTIVE_SECTIONS, COLLECT_FINAL_STAGE, isVisible, missingDocuments, validateFields, type Field, type Values,
 } from "@/lib/form-config";
 import { saveDraft, submitApplication, type DocRecord } from "./actions";
 import { DocumentUploader } from "./DocumentUploader";
 
 const STEPS = [
-  ...SECTIONS.map((s) => ({ id: s.id, title: s.title })),
+  ...ACTIVE_SECTIONS.map((s) => ({ id: s.id, title: s.title })),
   { id: "documents", title: "Documents" },
   { id: "review", title: "Review & submit" },
 ];
@@ -34,12 +34,12 @@ export function PortalForm({
   const [pending, startTransition] = useTransition();
 
   const current = STEPS[step];
-  const section = SECTIONS.find((s) => s.id === current.id);
+  const section = ACTIVE_SECTIONS.find((s) => s.id === current.id);
   const uploadedTypes = docs.map((d) => d.doc_type);
 
   const sectionComplete = useMemo(() => {
     const out: Record<string, boolean> = {};
-    for (const s of SECTIONS) out[s.id] = Object.keys(validateFields(s.fields, values)).length === 0;
+    for (const s of ACTIVE_SECTIONS) out[s.id] = Object.keys(validateFields(s.fields, values)).length === 0;
     out.documents = missingDocuments(values, uploadedTypes).length === 0;
     return out;
   }, [values, uploadedTypes]);
@@ -94,7 +94,7 @@ export function PortalForm({
     });
   }
 
-  const allFieldErrors = validateFields(SECTIONS.flatMap((s) => s.fields), values);
+  const allFieldErrors = validateFields(ACTIVE_SECTIONS.flatMap((s) => s.fields), values);
   const missingDocs = missingDocuments(values, uploadedTypes);
   const readyToSubmit = Object.keys(allFieldErrors).length === 0 && missingDocs.length === 0;
 
@@ -185,11 +185,18 @@ export function PortalForm({
             {section?.description && <p className="mt-2 max-w-prose text-[15px] leading-relaxed text-muted">{section.description}</p>}
             {current.id === "documents" && (
               <p className="mt-2 max-w-prose text-[15px] leading-relaxed text-muted">
-                Clear photos or scans in JPG, PNG or PDF, up to 5 MB each. You can{" "}
-                <a href="/guarantor-form" target="_blank" className="font-semibold text-brand underline underline-offset-2">
-                  download the guarantor form here
-                </a>
-                .
+                Clear photos or scans in JPG, PNG or PDF, up to 5 MB each.
+                {COLLECT_FINAL_STAGE ? (
+                  <>
+                    {" "}You can{" "}
+                    <a href="/guarantor-form" target="_blank" className="font-semibold text-brand underline underline-offset-2">
+                      download the guarantor form here
+                    </a>
+                    .
+                  </>
+                ) : (
+                  <> Your guarantor form and medical fitness certificate are not needed yet. We will ask for them before training.</>
+                )}
               </p>
             )}
             {current.id === "review" && (
@@ -210,7 +217,7 @@ export function PortalForm({
 
             {current.id === "documents" && (
               <ul className="divide-y divide-line rounded-lg border border-line">
-                {DOCUMENTS.filter((d) => d.type !== "drivers_licence" || values.has_drivers_licence === "yes").map((d) => (
+                {ACTIVE_DOCUMENTS.filter((d) => d.type !== "drivers_licence" || values.has_drivers_licence === "yes").map((d) => (
                   <DocumentUploader
                     key={d.type}
                     spec={d}
@@ -229,7 +236,7 @@ export function PortalForm({
                   <div className="rounded-lg border-l-4 border-amber-400 bg-amber-50 px-4 py-4 text-[15px] text-ink">
                     <p className="font-bold">A few things are still missing</p>
                     <ul className="mt-2 space-y-1">
-                      {SECTIONS.filter((s) => !sectionComplete[s.id]).map((s) => (
+                      {ACTIVE_SECTIONS.filter((s) => !sectionComplete[s.id]).map((s) => (
                         <li key={s.id}>
                           <button className="font-semibold underline underline-offset-2" onClick={() => goTo(STEPS.findIndex((x) => x.id === s.id))}>
                             Finish {s.title.toLowerCase()}

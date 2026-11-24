@@ -63,7 +63,7 @@ export function MessageComposer({
 
   const sample = selected[0]?.name ?? recipients[0]?.name ?? "Amina Bello";
   const previewHtml = useMemo(() => renderEmailHtml(personalise(body, sample)), [body, sample]);
-  const leftoverPlaceholder = /\[portal link\]/i.test(body);
+  const leftoverPlaceholder = /\[(portal link|insert link)\]/i.test(body);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: recipients.length };
@@ -165,9 +165,14 @@ export function MessageComposer({
               Reset to the standard invite
             </button>
           </div>
+          {/localhost|127\.0\.0\.1/.test(body) && (
+            <p className="mt-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-900">
+              The message links to a local test address (localhost), which candidates can&apos;t open. Use https://portal.wdni.ng.
+            </p>
+          )}
           {leftoverPlaceholder && (
             <p className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">
-              The message still says “[portal link]”. Set NEXT_PUBLIC_SITE_URL or type the portal address in.
+              The message still has a placeholder instead of the portal link. Set NEXT_PUBLIC_SITE_URL or type the portal address in.
             </p>
           )}
         </div>
