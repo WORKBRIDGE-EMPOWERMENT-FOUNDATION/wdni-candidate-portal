@@ -25,7 +25,7 @@ export default async function PortalPage() {
     if (isAdmin) redirect("/admin");
     return (
       <>
-        <SiteHeader right={<SignOutButton />} />
+        <SiteHeader href="/portal" right={<SignOutButton />} />
         <main className="mx-auto max-w-xl px-6 py-20">
           <h1 className="text-2xl">This account isn&apos;t on the shortlist</h1>
           <p className="mt-3 text-[15px] leading-relaxed text-muted">
@@ -56,16 +56,19 @@ export default async function PortalPage() {
     const [first, ...rest] = (entry.full_name as string).trim().split(/\s+/);
     values.first_name = first ?? "";
     values.surname = rest.length ? rest[rest.length - 1] : "";
-    values.email = (entry.email as string | null) ?? "";
     values.phone = entry.phone ? "0" + (normalizeNgPhone(entry.phone as string) ?? "").slice(4) : "";
   }
+
+  // The email they were shortlisted with is fixed; candidates can't change it on the form.
+  const lockedEmail = (entry.email as string | null) ?? null;
+  if (lockedEmail) values.email = lockedEmail;
 
   const editable = status === "shortlisted" || status === "in_progress" || status === "needs_changes";
   const firstName = values.first_name || (entry.full_name as string).split(" ")[0];
 
   return (
     <>
-      <SiteHeader right={<SignOutButton />} />
+      <SiteHeader href="/portal" right={<SignOutButton />} />
       <main className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6 lg:pt-10">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -83,7 +86,7 @@ export default async function PortalPage() {
         )}
 
         {editable ? (
-          <PortalForm userId={user.id} initialValues={values} initialDocs={documents} />
+          <PortalForm userId={user.id} initialValues={values} initialDocs={documents} lockedEmail={lockedEmail} />
         ) : (
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="order-2 lg:order-1">

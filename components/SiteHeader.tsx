@@ -1,11 +1,20 @@
 import Link from "next/link";
 import { BrandMark } from "./BrandMark";
 
-export function SiteHeader({ right, subtitle = "Candidate portal" }: { right?: React.ReactNode; subtitle?: string }) {
+/** `href`: where the logo goes. Signed-in pages point it at their own home so people don't drop out to the landing page. */
+export function SiteHeader({
+  right,
+  subtitle = "Candidate portal",
+  href = "/",
+}: {
+  right?: React.ReactNode;
+  subtitle?: string;
+  href?: string;
+}) {
   return (
     <header className="no-print border-b border-line bg-white">
       <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href={href} className="flex items-center gap-3">
           <BrandMark />
           <span className="leading-tight">
             <span className="block font-display text-[15px] font-extrabold text-ink">

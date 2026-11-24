@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { SubmissionSummary } from "@/components/SubmissionSummary";
 import {
   ACTIVE_DOCUMENTS, ACTIVE_SECTIONS, COLLECT_FINAL_STAGE, isVisible, missingDocuments, validateFields, type Field, type Values,
@@ -22,15 +22,45 @@ export function PortalForm({
   userId,
   initialValues,
   initialDocs,
+  lockedEmail,
 }: {
   userId: string;
   initialValues: Values;
   initialDocs: DocRecord[];
+  /** The email the candidate was shortlisted with. Shown read-only. */
+  lockedEmail: string | null;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [values, setValues] = useState<Values>(initialValues);
   const [docs, setDocs] = useState<DocRecord[]>(initialDocs);
-  const [step, setStep] = useState(0);
+  const [dirty, setDirty] = useState(false); // typed changes not yet saved
+
+  // The current step lives in the address (?step=next_of_kin), so a refresh or the back button keeps the
+  // candidate's place. With no step in the address, open the first unfinished step.
+  const [firstUnfinished] = useState(() => {
+    const docTypes = initialDocs.map((d) => d.doc_type);
+    const i = STEPS.findIndex((st) => {
+      const sec = ACTIVE_SECTIONS.find((x) => x.id === st.id);
+      if (sec) return Object.keys(validateFields(sec.fields, initialValues)).length > 0;
+      if (st.id === "documents") return missingDocuments(initialValues, docTypes).length > 0;
+      return true; // review
+    });
+    return Math.max(i, 0);
+  });
+  const fromAddress = STEPS.findIndex((st) => st.id === searchParams.get("step"));
+  const step = fromAddress >= 0 ? fromAddress : firstUnfinished;
+
+  // Warn before a refresh or closing the tab would throw away unsaved typing.
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [message, setMessage] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
   const [declaration, setDeclaration] = useState(false);
@@ -48,7 +78,9 @@ export function PortalForm({
   }, [values, uploadedTypes]);
 
   function setValue(name: string, value: string) {
+    if (name === "email" && lockedEmail) return;
     setValues((v) => ({ ...v, [name]: value }));
+    setDirty(true);
     if (errors[name]) setErrors((e) => {
       const next = { ...e };
       delete next[name];
@@ -58,7 +90,8 @@ export function PortalForm({
 
   function goTo(index: number) {
     setMessage(null);
-    setStep(index);
+    // pushState keeps Next's router in sync, so the back button moves between steps.
+    window.history.pushState(null, "", `?step=${STEPS[index].id}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -79,6 +112,7 @@ export function PortalForm({
         setMessage({ kind: "error", text: res.error });
         return;
       }
+      setDirty(false);
       if (advance) goTo(step + 1);
       else setMessage({ kind: "ok", text: "Saved. You can sign out and come back any time." });
     });
@@ -93,6 +127,7 @@ export function PortalForm({
         setMessage({ kind: "error", text: res.error });
         return;
       }
+      setDirty(false);
       router.refresh();
     });
   }
@@ -213,7 +248,8 @@ export function PortalForm({
             {section && (
               <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
                 {section.fields.filter((f) => isVisible(f, values)).map((f) => (
-                  <FieldInput key={f.name} field={f} value={values[f.name] ?? ""} error={errors[f.name]} onChange={setValue} />
+                  <FieldInput key={f.name} field={f} value={values[f.name] ?? ""} error={errors[f.name]} onChange={setValue}
+                    locked={f.name === "email" && !!lockedEmail} />
                 ))}
               </div>
             )}
@@ -333,11 +369,14 @@ function FieldInput({
   value,
   error,
   onChange,
+  locked = false,
 }: {
   field: Field;
   value: string;
   error?: string;
   onChange: (name: string, value: string) => void;
+  /** Shown but not editable (e.g. the email the candidate was shortlisted with). */
+  locked?: boolean;
 }) {
   const id = `f-${f.name}`;
   const common = {
@@ -394,8 +433,10 @@ function FieldInput({
         inputMode={f.type === "number" ? "numeric" : f.type === "tel" ? "tel" : undefined}
         min={f.type === "number" ? 0 : undefined}
         placeholder={f.placeholder}
-        className="input mt-1.5"
+        className={`input mt-1.5 ${locked ? "cursor-not-allowed bg-mist text-muted" : ""}`}
         value={value}
+        readOnly={locked}
+        aria-readonly={locked || undefined}
         onChange={(e) => onChange(f.name, e.target.value)}
       />
     );
@@ -405,10 +446,13 @@ function FieldInput({
     <div className={f.wide ? "sm:col-span-2" : ""}>
       <label id={`${id}-label`} htmlFor={f.type === "yesno" ? undefined : id} className="field-label">
         {f.label}
-        {!f.required && <span className="font-normal text-muted"> (optional)</span>}
+        {!f.required && !locked && <span className="font-normal text-muted"> (optional)</span>}
       </label>
       {control}
-      {f.help && !error && <p id={`${id}-help`} className="mt-1.5 text-[13px] text-muted">{f.help}</p>}
+      {locked && !error && (
+        <p className="mt-1.5 text-[13px] text-muted">This is the email you were shortlisted with. To change it, contact the WDNI team.</p>
+      )}
+      {f.help && !error && !locked && <p id={`${id}-help`} className="mt-1.5 text-[13px] text-muted">{f.help}</p>}
       {error && <p id={`${id}-error`} className="mt-1.5 text-[13px] font-semibold text-red-800">{error}</p>}
     </div>
   );

@@ -17,7 +17,8 @@ async function currentCandidate() {
   if (!user) return null;
   const { data: shortlistId } = await supabase.rpc("claim_shortlist");
   if (!shortlistId) return null;
-  return { supabase, user, shortlistId: shortlistId as string };
+  const { data: entry } = await supabase.from("shortlist").select("email").eq("id", shortlistId).single();
+  return { supabase, user, shortlistId: shortlistId as string, shortlistEmail: (entry?.email as string | null) ?? null };
 }
 
 function clean(values: Values): Values {
@@ -34,6 +35,7 @@ export async function saveDraft(values: Values): Promise<Result> {
   if (!me) return { ok: false, error: "Your session has expired. Please sign in again." };
 
   const v = clean(values);
+  if (me.shortlistEmail) v.email = me.shortlistEmail; // email is fixed to the shortlist
   const formatErrors = Object.fromEntries(
     Object.entries(validateFields(ACTIVE_FIELDS, v)).filter(([, msg]) => msg !== "This field is required."),
   );
@@ -115,6 +117,7 @@ export async function submitApplication(values: Values, declarationAccepted: boo
   if (!declarationAccepted) return { ok: false, error: "Please tick the declaration to continue." };
 
   const v = clean(values);
+  if (me.shortlistEmail) v.email = me.shortlistEmail; // email is fixed to the shortlist
   const fieldErrors = validateFields(ACTIVE_FIELDS, v);
   if (Object.keys(fieldErrors).length) {
     return { ok: false, error: "Some answers are missing or need fixing. Go back to the highlighted sections.", fieldErrors };

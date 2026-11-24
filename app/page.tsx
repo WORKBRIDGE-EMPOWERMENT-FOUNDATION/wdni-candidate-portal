@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { RouteMap } from "@/components/RouteMap";
 import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_WHATSAPP, PHONE_SIGNIN } from "@/lib/constants";
 import { COLLECT_FINAL_STAGE } from "@/lib/form-config";
+import { createClient } from "@/lib/supabase/server";
 
 const CHECKLIST = [
   PHONE_SIGNIN ? "The email address or phone number you applied with" : "Access to the email address you applied with",
@@ -16,10 +17,23 @@ const CHECKLIST = [
   ...(COLLECT_FINAL_STAGE ? ["A medical fitness certificate"] : []),
 ];
 
-export default function Home() {
+export default async function Home() {
+  // Signed-in visitors get a way back to their own area instead of "Sign in".
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isAdmin = user ? (await supabase.rpc("is_admin")).data === true : false;
+  const header = !user
+    ? { href: "/login", label: "Sign in" }
+    : isAdmin
+      ? { href: "/admin", label: "Open HR console" }
+      : { href: "/portal", label: "Go to my file" };
+  const startHref = user ? header.href : "/login";
+
   return (
     <>
-      <SiteHeader right={<Link href="/login" className="btn-primary py-2">Sign in</Link>} />
+      <SiteHeader right={<Link href={header.href} className="btn-primary py-2">{header.label}</Link>} />
 
       <main>
         <section className="bg-navy-900 text-white">
@@ -46,7 +60,7 @@ export default function Home() {
                 so we can verify them before training begins.
               </p>
               <div className="animate-rise mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 [animation-delay:240ms]">
-                <Link href="/login" className="btn-accent px-6 py-3 text-base">
+                <Link href={startHref} className="btn-accent px-6 py-3 text-base">
                   Start my candidate file
                 </Link>
                 <span className="text-sm text-white/65">About 20 minutes. Your progress is saved.</span>
