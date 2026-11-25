@@ -33,3 +33,25 @@ export async function sendTermiiSms(to: string, message: string): Promise<{ ok: 
     return { ok: false, error: `Could not reach Termii: ${err instanceof Error ? err.message : String(err)}` };
   }
 }
+
+/** Current Termii wallet balance, or null if it can't be read. */
+export async function getTermiiBalance(): Promise<{ balance: number; currency: string } | null> {
+  const apiKey = process.env.TERMII_API_KEY;
+  const baseUrl = process.env.TERMII_BASE_URL?.replace(/\/+$/, "");
+  if (!apiKey || !baseUrl) return null;
+  try {
+    const res = await fetch(`${baseUrl}/api/get-balance?api_key=${encodeURIComponent(apiKey)}`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(6_000),
+    });
+    const data = (await res.json().catch(() => null)) as { balance?: number | string; currency?: string } | null;
+    if (!res.ok || data?.balance == null) return null;
+    return { balance: Number(data.balance), currency: data.currency ?? "NGN" };
+  } catch {
+    return null;
+  }
+}
+
+export function termiiConfigured() {
+  return Boolean(process.env.TERMII_API_KEY && process.env.TERMII_BASE_URL && process.env.TERMII_SENDER_ID);
+}

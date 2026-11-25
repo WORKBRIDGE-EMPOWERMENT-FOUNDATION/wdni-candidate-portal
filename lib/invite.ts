@@ -54,3 +54,12 @@ WDNI Programme Team
 Workbridge Empowerment Foundation
 www.workbridgefoundation.org`;
 }
+
+/** Default bulk SMS: fits one SMS page (160 characters) for most names, plain characters only. */
+export function defaultInviteSms(siteUrl: string) {
+  return (
+    `Dear {first_name}, please create your WDNI participant profile at ${siteUrl || "[portal link]"} ` +
+    (PHONE_SIGNIN ? `with the phone or email you applied with. ` : `with the email you applied with. `) +
+    `Details are in your email.`
+  );
+}
