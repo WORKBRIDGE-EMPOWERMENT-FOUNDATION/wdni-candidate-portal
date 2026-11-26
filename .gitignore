@@ -7,3 +7,8 @@ out
 *.tsbuildinfo
 next-env.d.ts
 .DS_Store
+
+# Candidate data: never commit or put in public/
+private-data/
+*.csv
+*.xlsx
