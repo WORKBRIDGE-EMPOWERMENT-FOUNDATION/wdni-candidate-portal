@@ -3,7 +3,7 @@ import { SignOutButton, SiteHeader } from "@/components/SiteHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { SubmissionSummary } from "@/components/SubmissionSummary";
 import { createClient } from "@/lib/supabase/server";
-import { CONTACT_EMAIL, CONTACT_PHONE, formatDateTime, type CandidateStatus } from "@/lib/constants";
+import { CONTACT_EMAIL, CONTACT_PHONE, DEADLINE_LONG, formatDateTime, type CandidateStatus } from "@/lib/constants";
 import { fromDbRow } from "@/lib/form-config";
 import { normalizeNgPhone } from "@/lib/phone";
 import { PortalForm } from "./PortalForm";
@@ -85,6 +85,15 @@ export default async function PortalPage() {
           </div>
         )}
 
+        {(status === "shortlisted" || status === "in_progress") && (
+          <div className="mb-8 rounded-lg border-l-4 border-accent-dark bg-accent-soft px-5 py-4 text-[15px]">
+            <p>
+              Please complete and submit your file by <strong>{DEADLINE_LONG}</strong>. Once you have registered, we
+              will email you the commencement date and schedule.
+            </p>
+          </div>
+        )}
+
         {editable ? (
           <PortalForm userId={user.id} initialValues={values} initialDocs={documents} lockedEmail={lockedEmail} />
         ) : (
@@ -107,8 +116,9 @@ export default async function PortalPage() {
                     <h2 className="text-xl">File submitted</h2>
                     <p className="mt-2 text-[15px] leading-relaxed text-muted">
                       {submission?.submitted_at ? `Received ${formatDateTime(submission.submitted_at as string)}. ` : ""}
-                      The WDNI team is checking your details and documents and will contact you with next steps. If
-                      anything needs fixing, you&apos;ll be able to sign in and update it here.
+                      Thank you for registering. We will email you the commencement date and schedule
+                      {entry.email ? <> at <strong className="[overflow-wrap:anywhere]">{entry.email as string}</strong></> : null}. If
+                      anything in your file needs fixing, you&apos;ll be able to sign in and update it here.
                     </p>
                   </>
                 )}

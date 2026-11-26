@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { RouteMap } from "@/components/RouteMap";
-import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_WHATSAPP, PHONE_SIGNIN } from "@/lib/constants";
+import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_WHATSAPP, DEADLINE_LONG, PHONE_SIGNIN } from "@/lib/constants";
 import { COLLECT_FINAL_STAGE } from "@/lib/form-config";
 import { createClient } from "@/lib/supabase/server";
 
@@ -63,7 +63,9 @@ export default async function Home() {
                 <Link href={startHref} className="btn-accent px-6 py-3 text-base">
                   Start my candidate file
                 </Link>
-                <span className="text-sm text-white/65">About 20 minutes. Your progress is saved.</span>
+                <span className="text-sm text-white/65">
+                  Deadline: <strong className="text-white">{DEADLINE_LONG}</strong>. About 20 minutes; your progress is saved.
+                </span>
               </div>
             </div>
           </div>

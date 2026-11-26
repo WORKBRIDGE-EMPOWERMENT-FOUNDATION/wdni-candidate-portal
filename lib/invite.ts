@@ -1,11 +1,11 @@
-import { PHONE_SIGNIN } from "@/lib/constants";
+import { DEADLINE_LONG, DEADLINE_SHORT, PHONE_SIGNIN } from "@/lib/constants";
 import { COLLECT_FINAL_STAGE } from "@/lib/form-config";
 
 /** Default invite wording, used on the shortlist page (copy for WhatsApp/SMS) and as the starting bulk email. */
 export function defaultInvite(siteUrl: string) {
   return (
     `Congratulations! You have been shortlisted for the Women Drive Nigeria Initiative (WDNI) Pioneer 100.\n\n` +
-    `Please complete your biodata and upload your documents at ${siteUrl || "[portal link]"}\n` +
+    `Please complete your biodata and upload your documents at ${siteUrl || "[portal link]"} by ${DEADLINE_LONG}.\n` +
     (PHONE_SIGNIN
       ? `Sign in with the email address or phone number you applied with. You will receive a one-time code.\n\n`
       : `Sign in with the email address you applied with. We will email you a one-time code (check your spam folder if you can't see it).\n\n`) +
@@ -32,6 +32,8 @@ As part of our next phase, all shortlisted candidates are required to create the
 
 Profile Registration Link: ${siteUrl || "[Insert Link]"}
 
+Registration Deadline: ${DEADLINE_LONG}
+
 Registration Requirements:
 
 \u2022  Personal information
@@ -43,7 +45,7 @@ Registration Requirements:
 
 Please note that guarantor information and medical fitness certificates are not required at this stage.
 
-All 140 shortlisted candidates will participate in our capacity-building talk, orientation and induction programme. Further details regarding the schedule and participation will be communicated in due course.
+All 140 shortlisted candidates will participate in our capacity-building talk, orientation and induction programme. Once you have completed your registration, the commencement date and schedule will be communicated to you by email.
 
 Kindly ensure that all information provided is accurate and that sensitive documents are uploaded only through the designated registration portal.
 
@@ -58,8 +60,8 @@ www.workbridgefoundation.org`;
 /** Default bulk SMS: fits one SMS page (160 characters) for most names, plain characters only. */
 export function defaultInviteSms(siteUrl: string) {
   return (
-    `Dear {first_name}, please create your WDNI participant profile at ${siteUrl || "[portal link]"} ` +
+    `Dear {first_name}, register your WDNI participant profile by ${DEADLINE_SHORT} at ${siteUrl || "[portal link]"} ` +
     (PHONE_SIGNIN ? `with the phone or email you applied with. ` : `with the email you applied with. `) +
-    `Details are in your email.`
+    `Details in your email.`
   );
 }
